@@ -7,6 +7,7 @@ from .branchRestrictions import BranchRestrictions
 from .defaultReviewers import DefaultReviewers
 from .pipelines import Pipelines
 from .pullRequests import PullRequests
+from .deployKeys import DeployKeys
 
 
 class RepositoriesBase(BitbucketCloudBase):
@@ -211,6 +212,7 @@ class Repository(BitbucketCloudBase):
         self.__issues = Issues("{}/issues".format(self.url), **self._new_session_args)
         self.__pipelines = Pipelines("{}/pipelines".format(self.url), **self._new_session_args)
         self.__pullrequests = PullRequests("{}/pullrequests".format(self.url), **self._new_session_args)
+        self.__deploy_keys = DeployKeys("{}/deploy-keys".format(self.url), **self._new_session_args)
 
     def update(self, **kwargs):
         """
@@ -325,3 +327,8 @@ class Repository(BitbucketCloudBase):
     def pullrequests(self):
         """The repository pull requests"""
         return self.__pullrequests
+
+    @property
+    def deploy_keys(self):
+        """The repository deploy keys"""
+        return self.__deploy_keys
