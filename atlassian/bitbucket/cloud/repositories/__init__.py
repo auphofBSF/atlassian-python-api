@@ -67,22 +67,30 @@ class WorkspaceRepositories(RepositoriesBase):
     def __init__(self, url, *args, **kwargs):
         super(WorkspaceRepositories, self).__init__(url, *args, **kwargs)
 
-    def create(self, repo_slug, project_key=None):
+    def create(self, repo_slug, project_key=None, **kwargs):
         """
         Creates a new repository with the given repo_slug.
 
         :param repo_slug: string: The repo_slug of the project.
         :param project_key: string: The key of the project. If the project is not provided, the repository
                                     is automatically assigned to the oldest project in the workspace.
+        :kwargs: enables the setting of other repository parameters such as
+            is_private=True
+            fork_policy="no_public_forks"  *** SEE NOTE  below about possible issue adjusting the fork_policy from the API put ()
 
         :return: The created project object
 
         API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Bworkspace%7D/%7Brepo_slug%7D#post
+
+        NOTE:
+        possible issue that fork_policy can only be set at create see this old issue comment but still appears to be valid:
+        https://github.com/hashicorp/terraform/issues/9529#issuecomment-257937104
         """
 
         data = {"scm": "git"}
         if project_key is not None:
             data["project"] = {"key": project_key}
+        data = {**data, **kwargs}
         return self._get_object(self.post(repo_slug, data=data))
 
     def each(self, role=None, q=None, sort=None):
@@ -223,6 +231,10 @@ class Repository(BitbucketCloudBase):
         :return: The updated repository
 
         API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Bworkspace%7D/%7Brepo_slug%7D#put
+
+        NOTE:
+        possible issue that fork_policy can only be set at create see this old issue comment but still appears to be valid:
+        https://github.com/hashicorp/terraform/issues/9529#issuecomment-257937104
         """
         return self._update_data(self.put(None, data=kwargs))
 
