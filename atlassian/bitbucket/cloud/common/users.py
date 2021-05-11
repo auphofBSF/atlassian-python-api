@@ -2,6 +2,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 from ..base import BitbucketCloudBase
+from .userSSHkeys import SSHkeys
 
 
 class UsersBase(BitbucketCloudBase):
@@ -14,11 +15,10 @@ class UsersBase(BitbucketCloudBase):
 
 
 class User(BitbucketCloudBase):
-    # def __init__(self, url, data, *args, **kwargs):
-    #     super(User, self).__init__(url, *args, data=data, expected_type="user", **kwargs)
     def __init__(self, url, *args, **kwargs):
         logger.debug(f"tUser - init,\n url: {url}\n args: {args}\n kwargs:{kwargs} ")
         super(User, self).__init__(url, *args, expected_type="user", **kwargs)
+        self.__ssh_keys = SSHkeys("{}/ssh-keys".format(self.url), **self._new_session_args)
 
     @property
     def display_name(self):
@@ -35,6 +35,11 @@ class User(BitbucketCloudBase):
     @property
     def uuid(self):
         return self.get_data("uuid")
+
+    @property
+    def ssh_keys(self):
+        """The users registered ssh keys"""
+        return self.__ssh_keys
 
 
 class LoggedInUser(BitbucketCloudBase):
