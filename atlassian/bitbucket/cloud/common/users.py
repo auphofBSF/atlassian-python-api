@@ -38,7 +38,24 @@ class User(BitbucketCloudBase):
 
 class CurrentUser(BitbucketCloudBase):
     def __init__(self, url, *args, **kwargs):
+        logger.debug(f"CurrentUser - init,\n url: {url}\n args: {args}\n kwargs:{kwargs} ")
         super(CurrentUser, self).__init__(url, *args, **kwargs)
+        # super(CurrentUser, self).get("")
+
+    def __get_object(self, data):
+        return User(None, data=data, **self._new_session_args)
+
+    def lookup(self):
+        """
+        Returns the issue with the ID in this repository.
+
+        :param id: string: The requested issue ID
+
+        :return: The requested Issue objects
+
+        API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Bworkspace%7D/%7Brepo_slug%7D/issues/%7Bissue_id%7D#get
+        """
+        return self.__get_object(super(CurrentUser, self).get(""))
 
     @property
     def display_name(self):
