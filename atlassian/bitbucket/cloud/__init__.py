@@ -3,7 +3,7 @@
 from .base import BitbucketCloudBase
 from .workspaces import Workspaces
 from .repositories import Repositories
-from .common.users import CurrentUser
+from .common.users import LoggedInUser
 from .common.users import Users
 
 
@@ -16,9 +16,7 @@ class Cloud(BitbucketCloudBase):
         super(Cloud, self).__init__(url, *args, **kwargs)
         self.__workspaces = Workspaces("{}/workspaces".format(self.url), **self._new_session_args)
         self.__repositories = Repositories("{}/repositories".format(self.url), **self._new_session_args)
-        self.__user = CurrentUser(
-            "{}/user".format(self.url), {"type": "user"}, **self._new_session_args
-        )  # set data to None ?
+        self.__user = LoggedInUser("{}/user".format(self.url), **self._new_session_args)  # set data to None ?
         self.__users = Users("{}/users".format(self.url), **self._new_session_args)
 
     @property

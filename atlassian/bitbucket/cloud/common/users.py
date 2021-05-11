@@ -17,6 +17,7 @@ class User(BitbucketCloudBase):
     # def __init__(self, url, data, *args, **kwargs):
     #     super(User, self).__init__(url, *args, data=data, expected_type="user", **kwargs)
     def __init__(self, url, *args, **kwargs):
+        logger.debug(f"tUser - init,\n url: {url}\n args: {args}\n kwargs:{kwargs} ")
         super(User, self).__init__(url, *args, expected_type="user", **kwargs)
 
     @property
@@ -36,26 +37,22 @@ class User(BitbucketCloudBase):
         return self.get_data("uuid")
 
 
-class CurrentUser(BitbucketCloudBase):
+class LoggedInUser(BitbucketCloudBase):
+    """Enables gathering of the LoggedIn User
+    NOTE: SOME TECHNICAL DEBT here
+    This is a bit of a hack, would like to use the class User, but has issues because of the
+    expected_type argument. It could be more eleganty done but I just need it to work at the moment
+
+    API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/user#get
+    """
+
     def __init__(self, url, *args, **kwargs):
-        logger.debug(f"CurrentUser - init,\n url: {url}\n args: {args}\n kwargs:{kwargs} ")
-        super(CurrentUser, self).__init__(url, *args, **kwargs)
-        # super(CurrentUser, self).get("")
-
-    def __get_object(self, data):
-        return User(None, data=data, **self._new_session_args)
-
-    def lookup(self):
-        """
-        Returns the issue with the ID in this repository.
-
-        :param id: string: The requested issue ID
-
-        :return: The requested Issue objects
-
-        API docs: https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Bworkspace%7D/%7Brepo_slug%7D/issues/%7Bissue_id%7D#get
-        """
-        return self.__get_object(super(CurrentUser, self).get(""))
+        logger.debug(f"LoggedInUser - init,\n url: {url}\n args: {args}\n kwargs:{kwargs} ")
+        super(LoggedInUser, self).__init__(url, *args, **kwargs)
+        # TODO: TD. A Terrible hack to get the data into this Class, but it works for the momemnt
+        logger.debug(f"_BitbucketBase__data:{self._BitbucketBase__data}")
+        logged_in_user = User(None, data=super(LoggedInUser, self).get(""), **self._new_session_args)
+        self._BitbucketBase__data = logged_in_user._BitbucketBase__data
 
     @property
     def display_name(self):
