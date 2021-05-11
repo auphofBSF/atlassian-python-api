@@ -195,7 +195,7 @@ class PullRequest(BitbucketCloudBase):
     @property
     def author(self):
         """User object of the author"""
-        return User(None, self.get_data("author"))
+        return User(None, data=self.get_data("author"))
 
     def statuses(self):
         """
@@ -215,7 +215,7 @@ class PullRequest(BitbucketCloudBase):
     def reviewers(self):
         """Returns a generator object of reviewers"""
         for reviewer in self.get_data("reviewers"):
-            yield User(None, reviewer, **self._new_session_args)
+            yield User(None, data=reviewer, **self._new_session_args)
 
         return
 
@@ -325,7 +325,7 @@ class Participant(BitbucketCloudBase):
     @property
     def user(self):
         """User object with user information of the participant"""
-        return User(None, self.get_data("user"), **self._new_session_args)
+        return User(None, data=self.get_data("user"), **self._new_session_args)
 
     @property
     def is_participant(self):
